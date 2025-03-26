@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { Telegraf } = require("telegraf");
+const { Telegraf, Markup } = require("telegraf");
 const express = require("express");
 const axios = require("axios");
 
@@ -7,7 +7,7 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Unsplash orqali rasm qidirish
+// ======== API orqali qidirish funksiyalari ======== //
 const searchUnsplash = async (query) => {
   try {
     const response = await axios.get(
@@ -20,7 +20,6 @@ const searchUnsplash = async (query) => {
   }
 };
 
-// Tenor orqali GIF qidirish
 const searchTenor = async (query) => {
   try {
     const response = await axios.get(
@@ -33,7 +32,6 @@ const searchTenor = async (query) => {
   }
 };
 
-// Google orqali rasm qidirish
 const searchGoogle = async (query) => {
   try {
     const response = await axios.post(
@@ -48,10 +46,23 @@ const searchGoogle = async (query) => {
   }
 };
 
-// Bot buyruqlari
-bot.start((ctx) => ctx.reply("Salom! Menga biror narsa yozing va men rasm yoki GIF topaman!"));
+// ======== Bot buyruqlari ======== //
+bot.start((ctx) => {
+  ctx.reply(
+    "Salom! Menga biror so‘rov yozing yoki quyidagi tugmalardan foydalaning:",
+    Markup.keyboard([
+      ["🖼 Rasm Qidirish", "🎞 GIF Qidirish"],
+    ]).resize()
+  );
+});
+
+bot.hears("🖼 Rasm Qidirish", (ctx) => ctx.reply("Qidirayotgan rasm so‘zini kiriting: "));
+bot.hears("🎞 GIF Qidirish", (ctx) => ctx.reply("Qidirayotgan GIF so‘zini kiriting: "));
+
 bot.on("text", async (ctx) => {
   const query = ctx.message.text;
+  await ctx.reply("⏳ Qidirilmoqda...");
+  
   const image = await searchGoogle(query) || await searchUnsplash(query);
   const gif = await searchTenor(query);
   
@@ -64,7 +75,7 @@ bot.on("text", async (ctx) => {
   }
 });
 
-// Webhook sozlash
+// ======== Webhook sozlash ======== //
 app.use(express.json());
 app.post(`/bot${process.env.BOT_TOKEN}`, (req, res) => {
   bot.handleUpdate(req.body);
