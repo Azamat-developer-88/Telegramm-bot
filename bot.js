@@ -1,20 +1,25 @@
 require('dotenv').config();
 const { Telegraf, Markup, session } = require('telegraf');
 const axios = require('axios');
+const express = require('express');
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const SERPER_API_KEY = process.env.SERPER_API_KEY;
 const TENOR_API_KEY = process.env.TENOR_API_KEY;
+const PORT = process.env.PORT || 3000; // Render.com Web Service porti
 
-// ✅ Webhookni o‘chirib tashlash (409 xatolikni oldini olish)
-(async () => {
-    try {
-        await bot.telegram.deleteWebhook();
-        console.log("✅ Webhook o‘chirildi.");
-    } catch (error) {
-        console.error("❌ Webhook o‘chirishda xatolik:", error.message);
-    }
-})();
+const app = express();
+app.use(express.json());
+
+// ✅ Webhook sozlash
+const WEBHOOK_URL = `https://your-render-app-url.onrender.com`; // Render URL ni kiritish kerak
+
+bot.telegram.setWebhook(`${WEBHOOK_URL}/bot${process.env.BOT_TOKEN}`);
+
+app.post(`/bot${process.env.BOT_TOKEN}`, (req, res) => {
+    bot.handleUpdate(req.body);
+    res.sendStatus(200);
+});
 
 // ✅ Session o‘rnatish
 bot.use(session());
@@ -92,11 +97,7 @@ bot.on('text', async (ctx) => {
     }
 });
 
-// ✅ Botni ishga tushirish
-bot.launch()
-    .then(() => console.log('✅ Bot ishga tushdi...'))
-    .catch(err => console.error('❌ Botni ishga tushirishda xatolik:', err.message));
-
-// ✅ To‘g‘ri yopish
-process.once('SIGINT', () => bot.stop('SIGINT'));
-process.once('SIGTERM', () => bot.stop('SIGTERM'));
+// ✅ Express serverni ishga tushirish (Webhook uchun)
+app.listen(PORT, () => {
+    console.log(`✅ Server ishlayapti: http://localhost:${PORT}`);
+});
