@@ -67,7 +67,7 @@ bot.on("text", async (ctx) => {
   const gif = await searchTenor(query);
   
   if (image) {
-    await ctx.replyWithPhoto(image, { caption: `Google yoki Unsplash'dan topilgan rasm: ${query}` });
+    await ctx.replyWithPhoto(image, { caption: `Topilgan rasm: ${query}` });
   } else if (gif) {
     await ctx.replyWithAnimation(gif, { caption: `Tenor'dan topilgan GIF: ${query}` });
   } else {
