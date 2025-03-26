@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());
 
 // ✅ Webhook sozlash
-const WEBHOOK_URL = `https://your-render-app-url.onrender.com`; // Render URL ni kiritish kerak
+const WEBHOOK_URL = `https://telegramm-bot-pfrj.onrender.com`; // Render URL ni kiritish kerak
 
 bot.telegram.setWebhook(`${WEBHOOK_URL}/bot${process.env.BOT_TOKEN}`);
 
