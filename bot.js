@@ -6,20 +6,10 @@ const express = require('express');
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const SERPER_API_KEY = process.env.SERPER_API_KEY;
 const TENOR_API_KEY = process.env.TENOR_API_KEY;
-const PORT = process.env.PORT || 3000; // Render.com Web Service porti
+const PORT = process.env.PORT || 3000; // Render Web Service porti
 
 const app = express();
 app.use(express.json());
-
-// ✅ Webhook sozlash
-const WEBHOOK_URL = `https://telegramm-bot-pfrj.onrender.com`; // Render URL ni kiritish kerak
-
-bot.telegram.setWebhook(`${WEBHOOK_URL}/bot${process.env.BOT_TOKEN}`);
-
-app.post(`/bot${process.env.BOT_TOKEN}`, (req, res) => {
-    bot.handleUpdate(req.body);
-    res.sendStatus(200);
-});
 
 // ✅ Session o‘rnatish
 bot.use(session());
@@ -98,6 +88,15 @@ bot.on('text', async (ctx) => {
 });
 
 // ✅ Express serverni ishga tushirish (Webhook uchun)
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`✅ Server ishlayapti: http://localhost:${PORT}`);
+
+    // **TO‘G‘RI WEBHOOK O‘RNATISH**
+    const WEBHOOK_URL = `https://telegramm-bot-pfrj.onrender.com/bot${process.env.BOT_TOKEN}`;
+    try {
+        await bot.telegram.setWebhook(WEBHOOK_URL);
+        console.log(`✅ Webhook o‘rnatildi: ${WEBHOOK_URL}`);
+    } catch (error) {
+        console.error("❌ Webhook o‘rnatishda xatolik:", error.message);
+    }
 });
