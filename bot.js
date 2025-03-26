@@ -5,7 +5,7 @@ const axios = require("axios");
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
 // ======== API orqali qidirish funksiyalari ======== //
 const searchUnsplash = async (query) => {
@@ -88,5 +88,5 @@ app.get('/', (req, res) => {
 
 app.listen(PORT, async () => {
   console.log(`Server ${PORT}-portda ishlayapti`);
-  await bot.telegram.setWebhook(`https://your-app-name.onrender.com/bot${process.env.BOT_TOKEN}`);
+  await bot.telegram.setWebhook(`https://telegramm-bot-new.onrender.com/bot${process.env.BOT_TOKEN}`);
 });
